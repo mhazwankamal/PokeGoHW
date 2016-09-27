@@ -243,7 +243,7 @@ public class FloatingWindow extends IntentService  {
          //walking = 0.00001
         //running =  0.00003
         //driving  = 0.00005
-        walkingSpeed = 0.00001;
+        walkingSpeed = 0.00003;
 
         wmDpadGPS=(WindowManager) getSystemService(WINDOW_SERVICE);
         wmMainIconSnipe=(WindowManager) getSystemService(WINDOW_SERVICE);
@@ -540,7 +540,7 @@ public class FloatingWindow extends IntentService  {
                 Toast.makeText(getApplicationContext(),"Close PokeSnipe @N3", Toast.LENGTH_LONG).show();
                 stopSelf();
 
-
+                removeListener();
 
 
             }
@@ -708,7 +708,7 @@ public class FloatingWindow extends IntentService  {
             }
 
 
-        },300);
+        },800);
 
 
        //Set icon for walking speed
@@ -719,19 +719,19 @@ public class FloatingWindow extends IntentService  {
                 switch (NaviMode){
 
                     case 0:
-                        walkingSpeed = 0.00005;
-                        NaviSpeed.setImageResource(R.drawable.driving);
+                        walkingSpeed = 0.00009;
+                        NaviSpeed.setImageResource(R.drawable.running);
                         NaviModeInSwitch=1;
                         break;
 
                     case 1:
-                        walkingSpeed = 0.00003;
-                        NaviSpeed.setImageResource(R.drawable.running);
+                        walkingSpeed = 0.0003;
+                        NaviSpeed.setImageResource(R.drawable.driving);
                         NaviModeInSwitch=2;
                         break;
                     case 2:
 
-                    walkingSpeed = 0.00001;
+                    walkingSpeed = 0.00003;
                     NaviSpeed.setImageResource(R.drawable.walking);
                     NaviModeInSwitch=0;
                     break;
@@ -820,17 +820,7 @@ public class FloatingWindow extends IntentService  {
             @Override
             public void onLocationChanged(Location location) {
 
-                try {
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
 
-                    removeListener();
-                    lm.removeUpdates(listener);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
                 try{
                    restoreMockLocationSettings(0);
@@ -847,7 +837,17 @@ public class FloatingWindow extends IntentService  {
                 LatLonVal.setText(String.format("%.12s", CurrentLocation[1]));
 
 
+                try {
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
 
+                    removeListener();
+                    lm.removeUpdates(listener);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
 
