@@ -734,9 +734,9 @@ public class FloatingWindow extends IntentService  {
 
                 try{
                     restoreMockLocationSettings(0);
-                    restoreMockLocationSettings(0);
-                    restoreMockLocationSettings(0);
-                    restoreMockLocationSettings(0);
+                    //restoreMockLocationSettings(0);
+                    //restoreMockLocationSettings(0);
+                    //restoreMockLocationSettings(0);
 
 
                 }catch (Exception e){
