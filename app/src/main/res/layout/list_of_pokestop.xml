@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5b6b6b6"
+    android:padding="10dp"
+
+    android:elevation="@dimen/abc_action_bar_content_inset_material">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="List of Pokestop. Tap to GO!"
+        android:id="@+id/textView15"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/button2"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp"
+        android:id="@+id/view" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:id="@+id/listView"
+        android:layout_marginTop="10dp"
+        android:background="#82ffffff"
+        android:divider="#1c0a0a0a"
+        android:contextClickable="true"
+        android:dividerHeight="1dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/closePokelist" />
+
+
+</LinearLayout>

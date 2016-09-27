@@ -42,11 +42,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -60,6 +63,7 @@ import org.w3c.dom.Text;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.Timer;
@@ -77,8 +81,8 @@ public class FloatingWindow extends IntentService  {
     String lat,lon;
     LocationListener listener;
     long timeMockGPS;
-    private WindowManager wmDpadGPS,wmMainIconSnipe,wmSnipeMenu,wmGetMenuPanel,wmStatusBar;
-    private LinearLayout llMainIconSnipe;
+    private WindowManager wmDpadGPS,wmMainIconSnipe,wmSnipeMenu,wmGetMenuPanel,wmStatusBar,wmListPokestop;
+    private LinearLayout llMainIconSnipe,llPokeStopList;
     private RelativeLayout rlDpadGPS,rlSnipeMenu;
     private Button stop;
     private Button start;
@@ -86,6 +90,7 @@ public class FloatingWindow extends IntentService  {
     private Button cancelSnipeWin;
     private Button SnipeCoord;
     private ImageView NaviSpeed;
+    private ImageView pokestopB;
     private EditText CoordPokemonToSnipe;
     private ImageView moveButton;
     private ImageView dpad;
@@ -100,7 +105,9 @@ public class FloatingWindow extends IntentService  {
     private RelativeLayout mStaturBar;
     private TextView angelVal;
     private TextView LatLonVal;
+    private ListView ListPokeStop;
     private Button dismisPwindow;
+    private Button ClosePokeList;
     private boolean TimerUpdateLocRun=false;
     private double walkingSpeed;
     public String provider = LocationManager.GPS_PROVIDER;
@@ -110,6 +117,7 @@ public class FloatingWindow extends IntentService  {
     private PopupWindow popupWindow;
     private LayoutInflater layoutinflater;
     public String[] CurrentLocation={"a","b"};
+    public String [] PreviousLocation;
     public String UpdateIntervalVal;
     public String DelayMockVal;
     private boolean mainMenuShow=false;
@@ -125,6 +133,35 @@ public class FloatingWindow extends IntentService  {
     public boolean PokeSnipeONE;
     private int NaviMode = 0;
     private int NaviModeInSwitch = 0;
+    public String[] PokeStopName = {
+            "Silver Knight Armour",
+            "Vivo City",
+            "King Lious",
+            "Pebble Whirlpool Water Feature",
+            "Bubbleman Island",
+            "Giant Red Demon",
+            "Vivo City Mural",
+            "Spiral Pilars at VivoCity",
+            "Tropical Snowman",
+            "Red and Green Bubblemen",
+            "Marche at VivoCity"
+    };
+
+    public String[] PokeStopCoord ={
+            "1.26456,103.82358",
+            "1.26497,103.82362",
+            "1.26371,103.82334",
+            "1.26329,103.82309",
+            "1.26346,103.82258",
+            "1.26385,103.82255",
+            "1.26426,103.82259",
+            "1.26473,103.82296",
+            "1.26331,103.82217",
+            "1.26382,103.82151",
+            "1.26382,103.82151"
+    };
+
+
     public FloatingWindow() {
         super("FloatingWindow");
     }
@@ -158,17 +195,18 @@ public class FloatingWindow extends IntentService  {
         DelayMockVal=ReceiveVal[3];
 
         CoordinateHome=CurrentLocation;
-
+        PreviousLocation =CurrentLocation;
 
         //Toast.makeText(getApplicationContext(),"-PokeSnipe @N3 is loading-", Toast.LENGTH_LONG).show();
         PokeSnipeONE =false;
         TimerUpdateLocRun=true;
 
+
         //add mock location
         int value = setMockLocationSettings();//toggle ALLOW_MOCK_LOCATION on
         try {
            lm.addTestProvider("gps", false, false, false, false, false, true, true, 1,1);
-           lm.setTestProviderEnabled("gps",true);
+         lm.setTestProviderEnabled("gps",true);
         }catch (SecurityException e){
             e.printStackTrace();
             Toast.makeText(getApplicationContext(),"Allow mock location must be enabled in developer option", Toast.LENGTH_LONG).show();
@@ -212,17 +250,19 @@ public class FloatingWindow extends IntentService  {
         wmSnipeMenu=(WindowManager) getSystemService(WINDOW_SERVICE);
         wmGetMenuPanel=(WindowManager) getSystemService(WINDOW_SERVICE);
         wmStatusBar = (WindowManager) getSystemService(WINDOW_SERVICE);
+        wmListPokestop = (WindowManager) getSystemService(WINDOW_SERVICE);
         llMainIconSnipe =new LinearLayout(this);
         rlDpadGPS =new RelativeLayout(this);
         mMenuPanel = new RelativeLayout(this);
         stop = new Button(this);
         start=new Button (this);
         bhome =new Button(this);
+        ClosePokeList = new Button(this);
 
         double wmIconSipex,wmIconSipey;
         int fwmIconSipex,fwmIconSipey;
         wmIconSipex =(double) screenWidth * 0.12;
-        wmIconSipey = (double) screenHeight * 0.22;
+        wmIconSipey = (double) screenHeight * 0.30;
         fwmIconSipex=(int) wmIconSipex;
         fwmIconSipey=(int) wmIconSipey;
 
@@ -275,6 +315,17 @@ public class FloatingWindow extends IntentService  {
         parameterswmStatusBar.x = (int) (0.33 * (double) screenWidth); //floating window position
         parameterswmStatusBar.y = (int) (0.46 * (double) screenHeight);//floating window position//floating window position
 
+        final double wmListPokeStopx,wmListPokeStopy;
+        int fwmListPokeStopx,fwmListPokeStopy;
+        wmListPokeStopx =(double) screenWidth * 0.7;
+        wmListPokeStopy = (double) screenHeight * 0.7;
+        fwmListPokeStopx=(int) wmListPokeStopx;
+        fwmListPokeStopy=(int) wmListPokeStopy;
+
+        final WindowManager.LayoutParams parameterswmPokeStopList = new WindowManager.LayoutParams(fwmListPokeStopx, fwmListPokeStopy, WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, PixelFormat.TRANSLUCENT);
+        parameterswmPokeStopList.x = (int) 0; //floating window position
+        parameterswmPokeStopList.y = (int) -(0.05 * (double) screenHeight);//floating window position//floating window position
+
         //set size of linear layout
 
         layoutinflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -298,6 +349,7 @@ public class FloatingWindow extends IntentService  {
         Snipe = (ImageView) llMainIconSnipe.findViewById(R.id.imageView);
         HomeButton = (ImageView) llMainIconSnipe.findViewById(R.id.imageView5);
         NaviSpeed = (ImageView) llMainIconSnipe.findViewById(R.id.runningIcon);
+        pokestopB = (ImageView) llMainIconSnipe.findViewById(R.id.pokeStopList);
       //---------------------------------------------------------------------------------------------
 
       //rlSnipeMenu
@@ -316,8 +368,19 @@ public class FloatingWindow extends IntentService  {
         CloseServiceButton = (ImageView) mMenuPanel.findViewById(R.id.imageView8);
         openMoreMenu = (ImageView) mMenuPanel.findViewById(R.id.imageView7);
 
+        //llPokeStopList
+        llPokeStopList = (LinearLayout) layoutinflater.inflate(R.layout.list_of_pokestop,null);
+        ListPokeStop = (ListView) llPokeStopList.findViewById(R.id.listView);
+        ClosePokeList = (Button) llPokeStopList.findViewById(R.id.closePokelist);
       //----------------------------------------------------------------------------------------------
         //close layouts --------------------------------------------------------------------------
+
+
+        //List adapter
+        ArrayAdapter adapter =new ArrayAdapter<String>(this,R.layout.activity_listofpokestop,PokeStopName);
+
+        ListPokeStop.setAdapter(adapter);
+
 
         wmDpadGPS.addView(rlDpadGPS,parameterswmDpadGPS);
         wmStatusBar.addView(mStaturBar,parameterswmStatusBar);
@@ -477,19 +540,7 @@ public class FloatingWindow extends IntentService  {
                 Toast.makeText(getApplicationContext(),"Close PokeSnipe @N3", Toast.LENGTH_LONG).show();
                 stopSelf();
 
-                //remove GPS provider if exist
-                if(lm.getProvider("gps")!= null){
-                    int value = setMockLocationSettings();//toggle ALLOW_MOCK_LOCATION on
-                    try {
-                        lm.removeTestProvider("gps");
-                    }catch (SecurityException e){
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(),"Allow mock location must be enabled in developer option", Toast.LENGTH_LONG).show();
-                        return;
-                    }finally{
-                        restoreMockLocationSettings(value);//toggle ALLOW_MOCK_LOCATION off
-                    }
-                }
+
 
 
             }
@@ -629,9 +680,6 @@ public class FloatingWindow extends IntentService  {
                         lat = -(ratioNavigate * walkingSpeed);
                         lon = -((1-ratioNavigate) * walkingSpeed);
                     }
-
-
-
                 }
 
                 else if(269 < angle && angle < 360){
@@ -660,7 +708,7 @@ public class FloatingWindow extends IntentService  {
             }
 
 
-        },200);
+        },300);
 
 
        //Set icon for walking speed
@@ -696,8 +744,48 @@ public class FloatingWindow extends IntentService  {
 
         });
 
+        pokestopB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                wmListPokestop.addView(llPokeStopList,parameterswmPokeStopList);
+                wmMainIconSnipe.removeView(llMainIconSnipe);
+
+            }
+        });
+
+        ClosePokeList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                wmListPokestop.removeView(llPokeStopList);
+                stopSelf();
+                wmMainIconSnipe.addView(llMainIconSnipe,parameterswmMainIconSnipe);
+
+            }
+        });
+
+        ListPokeStop.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String GetPokeStopCoord = PokeStopCoord[position];
+
+                String [] PokeStopCoordinate = GetPokeStopCoord.split(",");
+
+                CurrentLocation=PokeStopCoordinate;
+
+                Toast.makeText(getApplicationContext(),"Going to PokeStop :[" + ((TextView) view).getText().toString() + "]", Toast.LENGTH_SHORT).show();
+
+                wmListPokestop.removeView(llPokeStopList);
+                stopSelf();
+                wmMainIconSnipe.addView(llMainIconSnipe,parameterswmMainIconSnipe);
+
+            }
+        });
     }
+
+
 
     private void SetCurrentLocation(){
 
@@ -732,12 +820,20 @@ public class FloatingWindow extends IntentService  {
             @Override
             public void onLocationChanged(Location location) {
 
-                try{
-                    restoreMockLocationSettings(0);
-                    restoreMockLocationSettings(0);
-                    restoreMockLocationSettings(0);
-                    restoreMockLocationSettings(0);
+                try {
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
 
+                    removeListener();
+                    lm.removeUpdates(listener);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try{
+                   restoreMockLocationSettings(0);
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -750,17 +846,9 @@ public class FloatingWindow extends IntentService  {
                 angelVal.setText(String.format("%.12s", CurrentLocation[0]));
                 LatLonVal.setText(String.format("%.12s", CurrentLocation[1]));
 
-                try {
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
 
-                    removeListener();
-                    lm.removeUpdates(listener);
 
-                } catch (Exception e) {
-                   e.printStackTrace();
-                }
+
 
 
             }
@@ -876,9 +964,14 @@ public class FloatingWindow extends IntentService  {
 
         checkPoGo = new Runnable() {
             int delay=Integer.parseInt(UpdateIntervalVal);
+
+
+
             @Override
             public void run() {
                 handler.postDelayed(this,delay);
+
+
 
                 String CurrentApp="";
 
@@ -914,10 +1007,15 @@ public class FloatingWindow extends IntentService  {
 
                 if (CurrentApp.equals("com.nianticlabs.pokemongo")){
                     //if (PokeSnipeONE == false) {
+                    if(Arrays.equals(PreviousLocation,CurrentLocation)){
+                        delay=1500;
+                    }else{
+                        delay=Integer.parseInt(UpdateIntervalVal);
+                    }
                         runUpdateMockLocation();
                     //}
 
-                    delay=Integer.parseInt(UpdateIntervalVal);
+
                     //Toast.makeText(getApplicationContext(),"Curr App :" + CurrentApp + " delay : " + delay + " SnipeOne " + PokeSnipeONE + " UpdateMock " + TimerUpdateLocRun, Toast.LENGTH_SHORT).show();
 
                 }else{
@@ -948,6 +1046,9 @@ public class FloatingWindow extends IntentService  {
             //    handler.postDelayed(this,6000);
 
            // LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            //set previous location
+
+
 
             Location location = new Location("gps");
 
@@ -962,8 +1063,10 @@ public class FloatingWindow extends IntentService  {
         //add mock location
         int value = setMockLocationSettings();//toggle ALLOW_MOCK_LOCATION on
        try {
-            lm.setTestProviderLocation("gps", location);
-        }catch (SecurityException e){
+
+           lm.setTestProviderLocation("gps", location);
+
+       }catch (SecurityException e){
             e.printStackTrace();
             Toast.makeText(getApplicationContext(),"Allow mock location must be enabled in developer option", Toast.LENGTH_LONG).show();
             return;
@@ -971,10 +1074,14 @@ public class FloatingWindow extends IntentService  {
             restoreMockLocationSettings(value);//toggle ALLOW_MOCK_LOCATION off
         }
 
+     //   List ProviderAda=lm.getAllProviders();
+
+      //  System.out.println(ProviderAda);
+
         launchLocationListener();
 
 
-        //angelVal.setText(String.format("%.12s",CurrentLocation[0]));
+     //   angelVal.setText(String.format("%.12s",CurrentLocation[0]));
         //LatLonVal.setText(String.format("%.12s",CurrentLocation[1]));
 
                // Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT).show();

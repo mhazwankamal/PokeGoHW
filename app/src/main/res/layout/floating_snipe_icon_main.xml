@@ -8,6 +8,23 @@
     <ImageView
         android:layout_width="35dp"
         android:layout_height="45dp"
+        android:id="@+id/pokeStopList"
+        android:src="@drawable/pokestop"
+        android:layout_marginLeft="2dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#44aaaaaa"
+        android:layout_below="@+id/button2"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="0dp"
+        android:id="@+id/viewPokeStop" />
+
+
+    <ImageView
+        android:layout_width="35dp"
+        android:layout_height="45dp"
         android:id="@+id/imageView"
         android:src="@drawable/shooting_target"
         android:layout_marginLeft="2dp" />
