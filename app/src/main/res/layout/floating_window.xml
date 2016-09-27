@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="#e3fefefe"
+    android:padding="5dp">
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentStart="false"
+        android:background="#000b22"
+        android:layout_above="@+id/textView8"
+        android:padding="50dp"
+        android:paddingLeft="50dp"
+        android:paddingTop="50dp"
+        android:paddingRight="50dp"
+        android:id="@+id/tableRow"></TableRow>
+
+    <Button
+            android:layout_width="120dp"
+            android:layout_height="46dp"
+            android:text="Snipe"
+            android:id="@+id/button1"
+            android:width="360px"
+               android:layout_gravity="left|bottom"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="46dp"
+            android:text="Cancel"
+            android:id="@+id/button"
+            android:width="360px"
+            android:layout_gravity="right|bottom"
+            android:layout_alignTop="@+id/button1"
+            android:layout_alignEnd="@+id/textView8" />
+
+        <EditText
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
+            android:maxWidth="0dp"
+            android:width="100dp"
+            android:textColor="#000000"
+            android:layout_gravity="center"
+            android:layout_below="@+id/textView8"
+            android:layout_alignEnd="@+id/button"
+            android:editable="true"
+            android:enabled="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Enter (latitude,longitude) of the Pokemon"
+            android:id="@+id/textView8"
+            android:textSize="15dp"
+            android:textColor="#000000"
+            android:layout_gravity="center"
+            android:layout_below="@+id/textView7"
+            android:layout_alignStart="@+id/tableRow"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="READY TO SNIPE!"
+        android:id="@+id/textView7"
+        android:phoneNumber="true"
+        android:textSize="25dp"
+        android:textIsSelectable="true"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+            android:layout_gravity="center_horizontal|top" />
+
+
+</RelativeLayout>
